@@ -7,6 +7,10 @@ const Productos = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
+  const [nuevo, setNuevo] = useState({
+    nombre: '', precio: '', stock: '', imagen_url: ''
+  });
+
   useEffect(() => {
     cargarProductos();
   }, []);
@@ -19,6 +23,26 @@ const Productos = () => {
       setError("No se pudo conectar con el servidor. ¿Está encendido?");
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleChange = (e) => {
+    setNuevo({ ...nuevo, [e.target.name]: e.target.value });
+  };
+
+  const guardarProducto = async (e) => {
+    e.preventDefault(); 
+    try {
+      await api.post('/', nuevo);
+      
+      alert("¡Producto agregado con éxito!");
+      
+      setNuevo({ nombre: '', precio: '', stock: '', imagen_url: '' });
+      
+      cargarProductos();
+    } catch (err) {
+      console.error(err);
+      alert("Error al guardar. Revisa la consola.");
     }
   };
 
@@ -45,13 +69,42 @@ const Productos = () => {
         </span>
       </header>
 
-      {/* Grid Responsivo: 1 col móvil, 2 tablet, 3 desktop */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      {/* FORMULARIO */}
+      <div className="mb-8 p-4 border border-slate-300 bg-white">
+        <h2 className="font-bold mb-2">Añadir Nuevo Producto</h2>
         
+        <form onSubmit={guardarProducto} className="flex flex-col gap-2">
+          <input 
+            type="text" name="nombre" placeholder="Nombre" required
+            value={nuevo.nombre} onChange={handleChange} 
+            className="border p-1" 
+          />
+          <input 
+            type="number" name="precio" placeholder="Precio" required
+            value={nuevo.precio} onChange={handleChange} 
+            className="border p-1" 
+          />
+          <input 
+            type="number" name="stock" placeholder="Stock" required
+            value={nuevo.stock} onChange={handleChange} 
+            className="border p-1" 
+          />
+          <input 
+            type="text" name="imagen_url" placeholder="URL de la imagen" 
+            value={nuevo.imagen_url} onChange={handleChange} 
+            className="border p-1" 
+          />
+          <button type="submit" className="bg-blue-600 text-white p-2 mt-2 font-bold">
+            Guardar
+          </button>
+        </form>
+      </div>
+      {/* ========================================= */}
+
+      {/* Grid Responsivo (Tu lista de productos original) */}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {productos.map((prod) => (
           <div key={prod.id} className="bg-white rounded-xl shadow-sm hover:shadow-md transition-shadow border border-slate-100 overflow-hidden flex flex-col">
-            
-            {/* Imagen del producto */}
             <div className="h-48 p-4 bg-white flex items-center justify-center border-b border-slate-50">
               <img 
                 src={prod.imagen_url || "https://via.placeholder.com/150"} 
@@ -59,8 +112,6 @@ const Productos = () => {
                 className="max-h-full object-contain"
               />
             </div>
-
-            {/* Cuerpo de la tarjeta */}
             <div className="p-4 flex-1 flex flex-col">
               <div className="flex justify-between items-start mb-2">
                 <h3 className="font-bold text-lg text-slate-800 line-clamp-1" title={prod.nombre}>
@@ -70,11 +121,9 @@ const Productos = () => {
                   ${prod.precio}
                 </span>
               </div>
-              
               <p className="text-slate-500 text-sm line-clamp-2 mb-4 flex-1">
                 {prod.descripcion || "Sin descripción disponible."}
               </p>
-
               <div className="flex items-center justify-between mt-auto pt-4 border-t border-slate-50">
                 <span className="text-xs font-medium text-slate-400">
                   Stock: <span className={prod.stock < 10 ? "text-red-500 font-bold" : "text-slate-600"}>{prod.stock}</span>
