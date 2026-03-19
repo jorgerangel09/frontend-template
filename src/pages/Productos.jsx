@@ -8,7 +8,7 @@ const Productos = () => {
   const [error, setError] = useState(null);
 
   const [nuevo, setNuevo] = useState({
-    nombre: '', precio: '', stock: '', imagen_url: ''
+    nombre: '', precio: '', stock: '', imagen_url: '', youtube_id: ''
   });
 
   useEffect(() => {
@@ -37,7 +37,7 @@ const Productos = () => {
       
       alert("¡Producto agregado con éxito!");
       
-      setNuevo({ nombre: '', precio: '', stock: '', imagen_url: '' });
+      setNuevo({ nombre: '', precio: '', stock: '', imagen_url: '', youtube_id: '' });
       
       cargarProductos();
     } catch (err) {
@@ -94,6 +94,11 @@ const Productos = () => {
             value={nuevo.imagen_url} onChange={handleChange} 
             className="border p-1" 
           />
+          <input 
+            type="text" name="youtube_id" placeholder="ID de YouTube (opcional)" 
+            value={nuevo.youtube_id} onChange={handleChange} 
+            className="border p-1" 
+          />
           <button type="submit" className="bg-blue-600 text-white p-2 mt-2 font-bold">
             Guardar
           </button>
@@ -106,11 +111,21 @@ const Productos = () => {
         {productos.map((prod) => (
           <div key={prod.id} className="bg-white rounded-xl shadow-sm hover:shadow-md transition-shadow border border-slate-100 overflow-hidden flex flex-col">
             <div className="h-48 p-4 bg-white flex items-center justify-center border-b border-slate-50">
+              {prod.youtube_id ? (
+                <iframe 
+                  width="100%" height="100%"
+                  src={`https://www.youtube.com/embed/${prod.youtube_id}`}
+                  title="YouTube video player"
+                  frameBorder="0"
+                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                  allowFullScreen
+                />
+              ) : (
               <img 
                 src={prod.imagen_url || "https://via.placeholder.com/150"} 
                 alt={prod.nombre} 
                 className="max-h-full object-contain"
-              />
+              />)}
             </div>
             <div className="p-4 flex-1 flex flex-col">
               <div className="flex justify-between items-start mb-2">
