@@ -1,4 +1,5 @@
-const API_URL = "http://localhost:4000/api";
+//const API_URL = "http://localhost:4000/api";//
+const API_URL = "https://practica-awos.onrender.com/api";
 
 export const api = {
   get: async (endpoint) => {
